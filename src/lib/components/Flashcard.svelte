@@ -1,12 +1,8 @@
 <script lang="ts">
     let { front, back, flipped = $bindable(false) } = $props();
-
-    function toggleFlip() {
-        flipped = !flipped;
-    }
 </script>
 
-<div class="card-container" onclick={toggleFlip}>
+<div class="card-container">
     <div class="card" class:flipped>
         <div class="card-face card-front">
             <div class="content">{front}</div>
@@ -19,21 +15,22 @@
 
 <style>
     .card-container {
-        width: 90vw;
-        height: 70vh;
+        width: 100%;
+        height: 100%;
         perspective: 1000px;
-        cursor: pointer;
         user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        cursor: pointer;
     }
 
     .card {
         width: 100%;
         height: 100%;
         position: relative;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         transform-style: preserve-3d;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        border-radius: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border-radius: 20px;
     }
 
     .card.flipped {
@@ -48,9 +45,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 24px;
+        border-radius: 20px;
         background: white;
-        padding: 2rem;
+        padding: 1.5rem;
         box-sizing: border-box;
         border: 1px solid rgba(0, 0, 0, 0.05);
     }
@@ -61,10 +58,11 @@
     }
 
     .content {
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 700;
         text-align: center;
         color: #1a1a1a;
+        word-break: break-word;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -77,6 +75,9 @@
         }
         .content {
             color: #f0f0f0;
+        }
+        .card {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
         }
     }
 </style>

@@ -1,0 +1,6 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+.idea/
+/src-tauri/gen/
+/src-tauri/target/
