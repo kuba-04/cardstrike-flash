@@ -21,12 +21,12 @@
   function handleScore(score: number) {
     if (isExiting) return;
     console.log(`Card "${cards[currentIndex].front}" scored: ${score}`);
+    isFlipped = false;
     isExiting = true;
 
     // Brief exit animation, then advance
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % cards.length;
-      isFlipped = false;
       isExiting = false;
     }, 250);
   }
@@ -99,7 +99,7 @@
       </div>
     {/if}
   {:else}
-    <Menu />
+    <Menu onLoginSuccess={() => (activeTab = "cards")} />
   {/if}
 
   <nav class="tab-bar">
