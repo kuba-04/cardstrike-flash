@@ -1,10 +1,10 @@
 export function createAuthStore() {
     let isLoggedIn = $state(false);
-    let user = $state<{ name: string } | null>(null);
+    let user = $state<{ email: string, password: string } | null>(null);
 
-    function login(username: string) {
+    function login(email: string, password: string) {
         isLoggedIn = true;
-        user = { name: username };
+        user = { email, password };
     }
 
     function logout() {

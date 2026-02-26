@@ -17,6 +17,14 @@
   let isExiting = $state(false);
 
   const scores = [0, 1, 2, 3, 4, 5];
+  const scoreBtnClasses: Record<number, string> = {
+    0: "bg-score-0 text-gray-900",
+    1: "bg-score-1 text-gray-900",
+    2: "bg-score-2 text-gray-900",
+    3: "bg-score-3 text-gray-900",
+    4: "bg-score-4 text-gray-900",
+    5: "bg-score-5 text-gray-900",
+  };
 
   function handleScore(score: number) {
     if (isExiting) return;
@@ -24,7 +32,6 @@
     isFlipped = false;
     isExiting = true;
 
-    // Brief exit animation, then advance
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % cards.length;
       isExiting = false;
@@ -37,7 +44,6 @@
     }
   }
 
-  // Effect to "fetch" cards when logged in
   $effect(() => {
     if (auth.isLoggedIn) {
       const current = untrack(() => cards);
@@ -52,31 +58,45 @@
   });
 </script>
 
-<main class="app-container">
+<main
+  class="w-screen h-screen h-dvh bg-[#f0f2f5] dark:bg-[#121212] text-[#1c1e21] dark:text-[#e4e6eb] flex flex-col relative overflow-hidden"
+>
   {#if activeTab === "cards"}
     {#if auth.isLoggedIn}
-      <div class="card-area">
-        <div class="card-counter">
+      <div class="flex-1 flex flex-col items-center justify-center p-4 min-h-0">
+        <div class="text-sm font-semibold opacity-50 mb-3 tracking-wide">
           {currentIndex + 1} / {cards.length}
         </div>
-        <div class="card-wrapper" class:exiting={isExiting} onclick={flipCard}>
+        <div
+          role="button"
+          tabindex="0"
+          class="w-full max-w-[400px] flex-1 max-h-[55vh] transition-all duration-250 ease-out cursor-pointer [tap-highlight-color:transparent] {isExiting
+            ? 'scale-90 opacity-0'
+            : ''}"
+          onclick={flipCard}
+          onkeydown={(e) => e.key === 'Enter' && flipCard()}
+        >
           <Flashcard
             front={cards[currentIndex].front}
             back={cards[currentIndex].back}
             bind:flipped={isFlipped}
           />
         </div>
-        <div class="tap-hint">
+        <div class="mt-3 text-base opacity-40 font-medium">
           {isFlipped ? "Translation" : "Word to learn"}
         </div>
       </div>
 
-      <div class="score-section">
-        <div class="score-label">Do you know it?</div>
-        <div class="score-buttons">
+      <div class="px-5 pt-3 pb-0">
+        <div class="text-center text-base font-semibold opacity-60 mb-2">
+          Do you know it?
+        </div>
+        <div class="flex gap-2 justify-center">
           {#each scores as score}
             <button
-              class="score-btn score-{score}"
+              class="flex-1 max-w-[60px] aspect-square rounded-[14px] border-none text-xl font-bold cursor-pointer transition-all duration-150 ease-out text-white [tap-highlight-color:transparent] active:scale-90 disabled:opacity-40 disabled:pointer-events-none {scoreBtnClasses[
+                score
+              ]}"
               onclick={() => handleScore(score)}
               disabled={isExiting}
             >
@@ -84,275 +104,53 @@
             </button>
           {/each}
         </div>
-        <div class="score-labels">
+        <div class="flex justify-between text-[0.7rem] opacity-40 mt-1.5 px-1">
           <span>No clue</span>
           <span>Perfect</span>
         </div>
       </div>
     {:else}
-      <div class="login-screen">
-        <h1>CardStrike Flash</h1>
-        <p>Please login to see your flashcards</p>
-        <button class="primary-btn" onclick={() => (activeTab = "menu")}
-          >Go to Menu to Login</button
+      <div
+        class="flex-1 flex flex-col items-center justify-center text-center p-8"
+      >
+        <h1
+          class="text-4xl mb-4 bg-gradient-to-br from-[#007aff] to-[#5856d6] bg-clip-text text-transparent"
         >
+          CardStrike Flash
+        </h1>
+        <p>Please login to see your flashcards</p>
+        <button
+          class="mt-8 py-4 px-8 rounded-xl border-none bg-[#007aff] text-white text-lg font-semibold cursor-pointer [tap-highlight-color:transparent]"
+          onclick={() => (activeTab = "menu")}
+        >
+          Go to Menu to Login
+        </button>
       </div>
     {/if}
   {:else}
     <Menu onLoginSuccess={() => (activeTab = "cards")} />
   {/if}
 
-  <nav class="tab-bar">
+  <nav
+    class="mt-4 flex bg-white dark:bg-[#1c1c1e] border-t border-black/5 dark:border-white/[0.08] pb-[env(safe-area-inset-bottom)]"
+  >
     <button
-      class="tab"
-      class:active={activeTab === "cards"}
+      class="flex-1 flex flex-col items-center gap-0.5 mt-4 py-4 border-none bg-transparent text-[#1c1e21] dark:text-[#e4e6eb] opacity-40 cursor-pointer transition-opacity duration-200 [tap-highlight-color:transparent] {activeTab ===
+      'cards'
+        ? '!opacity-100'
+        : ''}"
       onclick={() => (activeTab = "cards")}
     >
-      <span class="tab-label">Cards</span>
+      <span class="text-base font-semibold tracking-wide">Cards</span>
     </button>
     <button
-      class="tab"
-      class:active={activeTab === "menu"}
+      class="flex-1 flex flex-col items-center gap-0.5 mt-4 py-4 border-none bg-transparent text-[#1c1e21] dark:text-[#e4e6eb] opacity-40 cursor-pointer transition-opacity duration-200 [tap-highlight-color:transparent] {activeTab ===
+      'menu'
+        ? '!opacity-100'
+        : ''}"
       onclick={() => (activeTab = "menu")}
     >
-      <span class="tab-label">Menu</span>
+      <span class="text-base font-semibold tracking-wide">Menu</span>
     </button>
   </nav>
 </main>
-
-<style>
-  :root {
-    --bg-color: #f0f2f5;
-    --text-color: #1c1e21;
-    --card-bg: #ffffff;
-    --surface: #f8f9fa;
-    --border-subtle: rgba(0, 0, 0, 0.06);
-    --tab-bg: #ffffff;
-    overflow: hidden;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-color: #121212;
-      --text-color: #e4e6eb;
-      --card-bg: #2a2a2a;
-      --surface: #1c1c1e;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --tab-bg: #1c1c1e;
-    }
-  }
-
-  .app-container {
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    background: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Card area */
-  .card-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    min-height: 0;
-  }
-
-  .card-counter {
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.5;
-    margin-bottom: 0.75rem;
-    letter-spacing: 0.05em;
-  }
-
-  .card-wrapper {
-    width: 100%;
-    max-width: 400px;
-    flex: 1;
-    max-height: 55vh;
-    transition:
-      transform 0.25s ease,
-      opacity 0.25s ease;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .card-wrapper.exiting {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-
-  .tap-hint {
-    margin-top: 0.75rem;
-    font-size: 1rem;
-    opacity: 0.4;
-    font-weight: 500;
-  }
-
-  /* Score section */
-  .score-section {
-    padding: 0.75rem 1.25rem;
-    padding-bottom: 0;
-  }
-
-  .score-label {
-    text-align: center;
-    font-size: 1rem;
-    font-weight: 600;
-    opacity: 0.6;
-    margin-bottom: 0.5rem;
-  }
-
-  .score-buttons {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-
-  .score-btn {
-    flex: 1;
-    max-width: 60px;
-    aspect-ratio: 1;
-    border-radius: 14px;
-    border: none;
-    font-size: 1.2rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      transform 0.15s ease,
-      opacity 0.15s ease;
-    color: white;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .score-btn:active {
-    transform: scale(0.9);
-  }
-
-  .score-btn:disabled {
-    opacity: 0.4;
-    pointer-events: none;
-  }
-
-  .score-0 {
-    background: #f8a9a5;
-    color: #1a1a1a;
-  }
-  .score-1 {
-    background: #eebf6f;
-    color: #1a1a1a;
-  }
-  .score-2 {
-    background: #f8e783;
-    color: #1a1a1a;
-  }
-  .score-3 {
-    background: #e3f69d;
-    color: #1a1a1a;
-  }
-  .score-4 {
-    background: #a7f1b9;
-    color: #1a1a1a;
-  }
-  .score-5 {
-    background: #7bb6f4;
-    color: #1a1a1a;
-  }
-
-  .score-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    opacity: 0.4;
-    margin-top: 0.35rem;
-    padding: 0 0.25rem;
-  }
-
-  /* Tab bar */
-  .tab-bar {
-    margin-top: 1rem;
-    display: flex;
-    background: var(--tab-bg);
-    border-top: 1px solid var(--border-subtle);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  .tab {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
-    margin-top: 1rem;
-    padding: 1rem 0;
-    border: none;
-    background: none;
-    color: var(--text-color);
-    opacity: 0.4;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .tab.active {
-    opacity: 1;
-  }
-
-  .tab-icon {
-    font-size: 1.3rem;
-  }
-
-  .tab-label {
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  /* Login screen */
-  .login-screen {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 2rem;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    background: linear-gradient(45deg, #007aff, #5856d6);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .primary-btn {
-    margin-top: 2rem;
-    padding: 1rem 2rem;
-    border-radius: 12px;
-    border: none;
-    background: #007aff;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  :global(body) {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif;
-  }
-</style>
